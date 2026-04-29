@@ -17,6 +17,7 @@
             bun
             gh
             git
+            nix
           ];
 
           shellHook = ''
