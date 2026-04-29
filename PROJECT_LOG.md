@@ -221,3 +221,20 @@ The E2E guide is missing a lot of details. Review the E2E guides in https://gith
 - Researched `test-step-helper.ts` and `E2E_GUIDE.md` from `anicolao/food`.
 - Identified necessary improvements for `TestStepHelper` class and `deploy.yml`.
 - Handing off to @coder for implementation.
+
+## 2026-04-29: Aligning E2E Standards with Reference Projects
+
+### User Prompt
+Follow the E2E guides in https://github.com/anicolao/food/blob/main/E2E_GUIDE.md and https://github.com/anicolao/chess-tt/blob/main/E2E_GUIDE.md and make our E2E testing follow these. Pay particular attention to the Usage sections and ensure our testing is the same.
+This is still not right. Each verification line is supposed to have a description corresponding to a checkbox in the documentation that is then ticked to show that that verification happened. This enables the user to know exactly which verification corresponds with which check.
+
+### Research Findings
+- The reference projects use a `verifications` array of objects with `spec` and `check` properties.
+- The `spec` string is used to generate a checked checkbox (`- [x] spec`) in the scenario's `README.md`.
+- Our current `TestStepHelper` uses a simple array of functions for `verifications` and does not generate checkboxes in the `README.md`.
+
+### Plan
+- Update `TestStepHelper` to support the `{ spec, check }` structure for verifications.
+- Update `TestStepHelper.step` to include the `spec` descriptions as checked checkboxes in the `README.md`.
+- Update `E2E_GUIDE.md` documentation to reflect the new structure.
+- Update `tests/e2e/001-homepage/001-homepage.spec.ts` to use the new structure and verify `README.md` generation.
