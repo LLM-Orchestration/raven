@@ -326,3 +326,32 @@ Implement the MVP as designed in the doc.
 - `fashion` logic: Reviewed against requirements (correctly scaffolds `SKILL.md`, `tool.ts`, `flake.nix` and uses `gh` for publishing).
 - `execute` logic: Reviewed (correctly uses `nix run github:TOOL_ID`).
 
+## 2026-04-29: MVP Refactoring to Align with Human Feedback
+
+### User Prompt
+This looks completely wrong. There shouldn't be a "fallback" execute method, the skill execution should just be read the SKILL.md of the rave tool and understand from it how to use nix run to run the flake. There is never a reason to use the raven skill for execution.
+
+The search functionality is also not hooked up at all. the idea was that if the raven skill was installed in Gemini CLI, the front matter from all the raven tools would somehow be integrated with Gemini CLI's existing ability to discover skills. So the search method maybe could be useful at install time but really the goal is for regular skill discovery to work.
+
+### Actions Taken
+- **Removed execute fallback**:
+  - Deleted `src/execute.ts`.
+  - Removed `execute` command from `src/cli.ts` and `SKILL.md`.
+- **Enhanced search_skills**:
+  - Updated `src/search.ts` to return unique repository objects (fullName, description) instead of just logging.
+  - Updated `src/cli.ts` to log the JSON output of `search_skills`.
+- **Implemented get_skill_details**:
+  - Added `get_skill_details` in `src/search.ts` to fetch and decode `SKILL.md` via GitHub API.
+  - Added `get-details` command to `src/cli.ts`.
+- **Refined fashion tool**:
+  - Updated `src/fashion.ts` to include a "Usage" section in generated `SKILL.md` explicitly instructing the use of `nix run github:OWNER/REPO`.
+- **Updated Documentation**:
+  - Revised `DESIGN_MVP.md` to reflect the removal of the execution bridge and focus on direct Nix execution and unified discovery.
+  - Updated `SKILL.md` to include `get_skill_details`.
+
+### Verification Results
+- `npm run build`: Passed.
+- `raven search "raven"`: Verified it returns JSON list of repos.
+- `raven get-details <toolId>`: Verified it fetches and displays `SKILL.md`.
+- `fashion` logic: Verified it generates correct "Usage" section in `SKILL.md`.
+
