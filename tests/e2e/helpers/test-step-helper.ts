@@ -3,8 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export interface StepOptions {
+  /** Brief description of the action taken in this step. */
   description: string;
-  verifications?: { spec: string; check: () => Promise<void> }[];
+  /** List of verifications to perform after the action and stabilization. */
+  verifications?: { 
+    /** The description of what is being verified, used for test reports and documentation checkboxes. */
+    spec: string; 
+    /** The actual assertion logic. */
+    check: () => Promise<void> 
+  }[];
 }
 
 export class TestStepHelper {
