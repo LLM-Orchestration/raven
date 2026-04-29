@@ -44,8 +44,11 @@ test('scenario title', async ({ page }, testInfo) => {
       await page.goto('/');
     },
     verifications: [
-      async () => {
-        await expect(page).toHaveTitle(/Expected Title/);
+      {
+        spec: 'The page title should contain "Expected Title"',
+        check: async () => {
+          await expect(page).toHaveTitle(/Expected Title/);
+        }
       }
     ]
   });
@@ -56,8 +59,11 @@ test('scenario title', async ({ page }, testInfo) => {
       await page.getByRole('button', { name: 'Click Me' }).click();
     },
     verifications: [
-      async () => {
-        await expect(page.getByText('Success')).toBeVisible();
+      {
+        spec: 'The success message should be visible',
+        check: async () => {
+          await expect(page.getByText('Success')).toBeVisible();
+        }
       }
     ]
   });
