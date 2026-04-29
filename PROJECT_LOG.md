@@ -183,3 +183,14 @@ Production may 404 before the first successful `main` deploy, even if PR preview
 
 - GitHub Pages cannot be enabled for a private repository if the account plan does not support it.
 - PR previews can work before production if the PR workflow has deployed `prN/` but `main` has not yet deployed root.
+
+### 2026-04-29: Conductor Verification
+
+- **Environment**: Verified flake.nix contains necessary tools.
+- **Build**: npx bun run build passed successfully.
+- **Testing**: npx playwright install chromium followed by npx bun run test:e2e passed (1 test).
+- **Documentation**: All baseline documents (README, VISION, PROJECT_LOG, AGENTS, E2E_GUIDE) are present and follow conventions.
+- **CI/CD**: deploy.yml correctly handles PR previews and main deployments.
+- **PR**: Created PR #2 to merge scaffolding into main.
+
+**Verdict**: Scaffolding complete and verified.
