@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Set Base Path and Destination
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "PUBLIC_BASE_PATH=/raven/pr${{ github.event.number }}/" >> $GITHUB_ENV
+            echo "DESTINATION_DIR=pr${{ github.event.number }}" >> $GITHUB_ENV
+          else
+            echo "PUBLIC_BASE_PATH=/raven/" >> $GITHUB_ENV
+            echo "DESTINATION_DIR=." >> $GITHUB_ENV
+          fi
+
+      - name: Build
+        run: bun run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: ${{ env.DESTINATION_DIR }}
+          keep_files: true
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            PR Preview: https://LLM-Orchestration.github.io/raven/pr${{ github.event.number }}/
+          comment_tag: preview-url
