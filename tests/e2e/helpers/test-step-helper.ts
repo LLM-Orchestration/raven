@@ -61,10 +61,10 @@ export class TestStepHelper {
     await test.step(description, async () => {
       await action();
       
-      // Stabilization: Wait for network, images, and animations
-      try {
-        await Promise.all([
-          this.page.waitForLoadState('networkidle', { timeout: 2000 }).catch(() => {}),
+      // Stabilization: Wait for network, images, and animations with a strict 2000ms timeout
+      await Promise.race([
+        Promise.all([
+          this.page.waitForLoadState('networkidle').catch(() => {}),
           this.page.evaluate(async () => {
             const images = Array.from(document.querySelectorAll('img'));
             await Promise.all(images.map(img => {
@@ -76,10 +76,9 @@ export class TestStepHelper {
             }));
           }).catch(() => {}),
           this.waitForAnimations().catch(() => {})
-        ]);
-      } catch (e) {
-        // Continue if stabilization times out
-      }
+        ]),
+        new Promise(resolve => setTimeout(resolve, 2000))
+      ]).catch(() => {});
 
       // Execute verifications
       for (const verification of verifications) {
