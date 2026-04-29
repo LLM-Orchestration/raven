@@ -208,3 +208,16 @@ Production may 404 before the first successful `main` deploy, even if PR preview
 - **Build/Test**: Verified `npx bun run build` and `npx bun run test:e2e` pass in the current environment.
 - **Status**: PR #2 is open and passing checks. Human verification confirmed.
 - **Handoff**: Moving to Human Review.
+
+## 2026-04-29: Fixing GitHub Pages and Enhancing E2E
+
+### User Prompt
+The PR preview for github pages gives a 404 error, so something isn't set up properly. Fix it so we can see the preview.
+The E2E guide is missing a lot of details. Review the E2E guides in https://github.com/anicolao/chess-tt and https://github.com/anicolao/food and write a test-step-helper like those.
+
+### Actions Taken
+- Verified GitHub Pages was not enabled for the repository.
+- **Enabled GitHub Pages** via API: `gh api repos/LLM-Orchestration/raven/pages -X POST`.
+- Researched `test-step-helper.ts` and `E2E_GUIDE.md` from `anicolao/food`.
+- Identified necessary improvements for `TestStepHelper` class and `deploy.yml`.
+- Handing off to @coder for implementation.
