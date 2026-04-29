@@ -238,3 +238,18 @@ This is still not right. Each verification line is supposed to have a descriptio
 - Update `TestStepHelper.step` to include the `spec` descriptions as checked checkboxes in the `README.md`.
 - Update `E2E_GUIDE.md` documentation to reflect the new structure.
 - Update `tests/e2e/001-homepage/001-homepage.spec.ts` to use the new structure and verify `README.md` generation.
+
+### Actions Taken
+- Updated `tests/e2e/helpers/test-step-helper.ts`:
+  - Modified `StepOptions` interface to use an array of `{ spec: string; check: () => Promise<void> }` for `verifications`.
+  - Updated `step` method to iterate through verifications, execute checks, and log them as checked checkboxes in `README.md`.
+- Updated `E2E_GUIDE.md` code examples to match the new `verifications` structure.
+- Updated `tests/e2e/001-homepage/001-homepage.spec.ts` to use the new structured verifications.
+- Re-generated E2E documentation and screenshots.
+
+### Verification Results
+- Ran `npm run test:e2e`: Passed.
+- Confirmed `tests/e2e/001-homepage/README.md` contains the expected checkboxes:
+  - `- [x] The page title should contain "Raven"`
+  - `- [x] The "Raven" heading should be visible`
+- Screenshots are correctly generated and linked in the `README.md`.
