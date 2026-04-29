@@ -3,66 +3,74 @@
 ## 1. Goal
 The Raven MVP aims to demonstrate the core "self-fashioning" loop for Agentic LLMs: discovering existing tools, executing them reproducibly via Nix, and creating new tools when none satisfy the requirement.
 
-## 2. Core Components
+Crucially, Raven is designed to integrate seamlessly with the existing Gemini CLI skill discovery mechanism, ensuring that "Raven tools" are found and used in the same unified way as any other skill in the ecosystem.
 
-### 2.1 Raven Skill (The Interface)
-The entry point for LLMs. It defines the functions available to the agent:
-- `search(query: string)`: Searches the Raven Registry for tools matching the semantic description.
-- `execute(toolId: string, args: any)`: Runs a tool using `nix run`.
-- `fashion(name: string, description: string, implementation: string)`: Generates a new tool (Nix flake + implementation code) and pushes it to the registry.
+## 2. Core Architecture
 
-### 2.2 Raven Registry (The Repository)
-A central (or federated) GitHub repository acting as the source of truth for available tools.
-- **Structure**: Each tool is a directory or a standalone repository containing a `flake.nix` and the tool's source code.
-- **Metadata**: A `tools.json` or similar index file in the registry repository to facilitate searching.
+### 2.1 Unified Skill Discovery
+Raven tools do not use a proprietary search mechanism. Instead, they leverage the Gemini CLI's standard skill discovery process:
+- **`SKILL.md`**: Every Raven tool is a repository containing a `SKILL.md` file at its root, with YAML frontmatter defining its `name` and `description`.
+- **Unified Indexing**: The Gemini CLI (or a Raven-specific extension) discovers these tools by searching GitHub for repositories tagged with specific topics (e.g., `gemini-skill`, `raven-tool`).
+- **Prompt Injection**: Discovered tools are injected into the LLM's system prompt as available skills, alongside built-in and locally installed skills.
+- **On-Demand Activation**: When the LLM calls `activate_skill(name: "tool-name")`, the environment resolves the GitHub repository, prepares the environment via Nix, and activates the skill's instructions.
 
-### 2.3 Execution Engine
-A lightweight wrapper around the Nix CLI.
-- Uses `nix run github:owner/repo/tool-path` to execute tools.
-- Ensures isolation and reproducibility by relying on Nix's dependency management.
+### 2.2 Repository-Centric Tooling
+Each Raven tool is a separate, standalone GitHub repository by default.
+- **Isolation**: Each tool has its own dependencies, versioning, and lifecycle.
+- **Distribution**: Tools are shared and discovered via GitHub.
+- **Metadata**: GitHub Topics are used for indexing and categorization.
 
-### 2.4 Fashioning Workflow
-The process of creating a new tool:
-1. **Template Selection**: Use a set of Nix flake templates (e.g., Python, Node, Go).
-2. **Code Generation**: LLM generates the tool's logic.
-3. **Validation**: Basic syntax check (and ideally a `nix build` check).
-4. **Publication**: Use `gh` CLI to create a new branch/PR or commit directly to the registry repository.
+### 2.3 The Raven Skill (The Orchestrator)
+The `raven` skill itself acts as the entry point for management functions:
+- `fashion(name: string, description: string, implementation: string)`: Generates a new GitHub repository for a tool, populates it with `SKILL.md` and `flake.nix`, and applies the necessary topic tags.
+- `execute(toolId: string, args: any)`: A fallback mechanism for explicit tool execution if standard skill activation is not applicable.
+
+### 2.4 Execution Engine (Nix Flakes)
+Nix remains the foundation for reproducibility:
+- Each tool repository contains a `flake.nix`.
+- The execution environment is deterministic and isolated.
+- The `gemini` runtime handles the `nix run` invocation during skill activation or execution.
 
 ## 3. Data Model
 
-```typescript
-interface Tool {
-  id: string; // unique identifier (e.g., "github:owner/repo/tool")
-  name: string;
-  description: string;
-  skill: SkillDefinition; // How the LLM calls the tool
-  requirements: string[]; // e.g., ["nix", "python"]
-}
+### 3.1 Tool Repository Structure
+```text
+raven-tool-repo/
+├── SKILL.md      # LLM instructions & metadata (Required)
+├── flake.nix     # Reproducible environment (Required)
+├── flake.lock    # Pinning dependencies
+├── tool.ts       # Implementation (e.g., Node, Python, or Go)
+└── README.md     # Human-readable documentation
+```
 
-interface SkillDefinition {
-  parameters: any; // JSON Schema
-  returns: any; // JSON Schema
-}
+### 3.2 Skill Metadata (SKILL.md YAML Frontmatter)
+```yaml
+---
+name: pdf-to-md
+description: Converts PDF documents to Markdown format using the 'marker' library.
+---
 ```
 
 ## 4. MVP User Flow (Agent Perspective)
 
 1. **Requirement**: Agent needs to convert a PDF to Markdown.
-2. **Search**: `raven.search("pdf to markdown converter")` -> Returns 0 results.
-3. **Fashion**: `raven.fashion("pdf-to-md", "Converts PDF to MD", "python code using marker...")`.
-    - Raven creates `tools/pdf-to-md/` directory.
-    - Raven generates `flake.nix` with Python and necessary dependencies.
-    - Raven pushes to GitHub.
-4. **Use**: `raven.execute("pdf-to-md", { file: "input.pdf" })`.
+2. **Discovery**: The agent identifies `pdf-to-md` in its `Available Agent Skills` list (populated by the unified indexer).
+3. **Activation**: Agent calls `activate_skill(name: "pdf-to-md")`.
+4. **Execution**: The agent follows the newly loaded instructions in the `pdf-to-md` `SKILL.md` to perform the conversion.
+5. **Fashioning (if missing)**:
+    - If no suitable skill is found, the agent calls `raven.fashion(...)`.
+    - Raven creates a new repo `username/pdf-to-md` with the generated implementation.
+    - Raven tags the repo with `raven-tool`.
+    - The new skill becomes discoverable for the next session (or immediately if indexed).
 
 ## 5. Technical Stack
-- **Runtime**: Bun (for the Raven CLI/Skill implementation).
-- **Package Management**: Nix flakes.
-- **Discovery/Registry**: GitHub (Repositories + `gh` CLI).
-- **Testing**: Playwright (for E2E flows involving the UI/Dashboard).
+- **Runtime**: Bun (for Raven skill) and Nix (for tool execution).
+- **Discovery**: GitHub Search API (via `gh` CLI).
+- **Packaging**: Nix Flakes.
+- **Integration**: Gemini CLI Skill standard (`SKILL.md`).
 
 ## 6. Milestones
-1. **Phase 1: Registry Structure & Discovery**: Define the Tool/Skill schema and implement `search`.
-2. **Phase 2: Execution Engine**: Implement the `execute` function using Nix.
-3. **Phase 3: Tool Creation (Fashioning)**: Implement the `fashion` workflow using templates and `gh` CLI.
-4. **Phase 4: Web Dashboard**: Create a minimal Web UI to visualize the registry and tool execution logs.
+1. **Phase 1: Discovery Integration**: Implement the GitHub Topic searcher and hook it into the local skill indexer.
+2. **Phase 2: Tool Template**: Define the standard repository template including `SKILL.md` and `flake.nix`.
+3. **Phase 3: Execution Logic**: Ensure the runtime can execute Nix-backed skills during `activate_skill`.
+4. **Phase 4: Fashioning (Self-Creation)**: Implement the repository creation, template population, and tagging workflow using the `gh` CLI.
