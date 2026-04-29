@@ -254,21 +254,38 @@ This is still not right. Each verification line is supposed to have a descriptio
   - `- [x] The "Raven" heading should be visible`
 - Screenshots are correctly generated and linked in the `README.md`.
 
-## 2026-04-29: MVP Design Documentation
+## 2026-04-29: Revising MVP Design for Unified Discovery
 
 ### User Prompt
-Write a design doc for the MVP for the Raven project.
+No, I don't like two major aspects of this MVP.
+
+First off, Raven tool/skill discovery needs to leverage the existing ability to find skills. The raven skill itself, plus the skills that are in the 'raven repository', should be found in a unified way *so that when the LLM looks for a skill it may find one that is already installed and isn't a raven tool, or it may find the skill and the corresponding raven tool*. How to achieve this integration is unclear, but discovery shouldn't be a new mechanism that the LLM might or might not realize it can search; by looping into the existing skills it will work as well as any other skill in the existing skills ecosystem.
+
+Secondly, each Raven tool should be a separate github repository by default. So creating a new skill involves creating a new repo and publishing it.
+
+Ideally there is some way to tag those repositories so that they can all be found via some simple github search, and perhaps that mechanism is how we create an index of these to provide to the normal skills search, or something like that, but I don't know the details of how existing agents find skills / what we need to do to truly integrate with that.
+
+### Research Findings
+- Gemini CLI discovers skills by scanning hierarchical locations: `.gemini/skills/` (workspace), `~/.gemini/skills/` (user), and extensions.
+- Skill metadata is defined in `SKILL.md` (YAML frontmatter + instructions).
+- There is no built-in "skill search" tool in the core CLI; the LLM discovers skills based on descriptions injected into its prompt.
+- **Integration Strategy**: To achieve unified discovery without adding a "new mechanism," Raven tools must be designed as standard Gemini CLI skills (containing a `SKILL.md`).
+- **Global Discovery**: A `search_skills` tool can be provided (likely as part of the Raven skill or a companion "Discovery" skill) that aggregates local skills and searches GitHub repositories tagged with specific topics (e.g., `gemini-skill`, `raven-tool`).
 
 ### Actions Taken
-- Researched Raven's vision and core concepts.
-- Defined the "Raven Skill", "Raven Registry", and "Execution Engine" components.
-- Outlined the "Self-Fashioning" workflow for LLMs.
-- Created `DESIGN_MVP.md` with the detailed architecture and implementation milestones.
-- Updated `VISION.md` to reference the new design document.
+- **Revised DESIGN_MVP.md**:
+  - Abandoned the "central registry" model in favor of **decentralized GitHub repositories** for each tool.
+  - Implemented a **Unified Skill Discovery** approach:
+    - Raven tools are standard skills with `SKILL.md`.
+    - Tools are indexed using GitHub Repository Topics (`gemini-skill`, `raven-tool`).
+    - The `search_skills` tool provides a seamless interface to both local and global skills.
+  - Updated the **Execution Engine** to run tools directly from GitHub URLs using `nix run github:owner/repo`.
+  - Updated the **Fashioning Workflow** to create, push, and tag new GitHub repositories automatically.
+- **Updated VISION.md**: Aligned the product vision with the decentralized, tag-based discovery model.
+- **Updated README.md**: Reflected the new workflow and mission.
 
-### MVP Scope Defined
-- **Raven Skill**: LLM-facing functions (`search`, `execute`, `fashion`).
-- **Raven Registry**: GitHub-backed tool repository with `tools.json` index.
-- **Execution Engine**: Nix-based isolated environment.
-- **Self-Fashioning**: Template-based generation and publication of tools.
+### Next Steps
+- Implement the `search_skills` tool capable of querying GitHub topics.
+- Develop the Nix-based execution bridge for remote repositories.
+- Automate the repository creation and tagging process in the `fashion` tool.
 
