@@ -193,4 +193,12 @@ Production may 404 before the first successful `main` deploy, even if PR preview
 - **CI/CD**: deploy.yml correctly handles PR previews and main deployments.
 - **PR**: Created PR #2 to merge scaffolding into main.
 
+### 2026-04-29: Conductor Re-Verification
+
+- **Build**: Re-ran `bun run build`, passed.
+- **Testing**: Re-ran `bun run test:e2e`, passed.
+- **Documentation**: Confirmed all baseline files are present and follow conventions.
+- **CI/CD**: Verified `deploy.yml` logic for PR previews.
+- **Handover**: Summary posted to Issue #1. GraphQL rate limit encountered for Project V2 status update; manual status move to "Human Review" may be required.
+
 **Verdict**: Scaffolding complete and verified.
