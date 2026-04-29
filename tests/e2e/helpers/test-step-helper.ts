@@ -4,7 +4,6 @@ import * as path from 'path';
 
 export interface StepOptions {
   description: string;
-  action: () => Promise<void>;
   verifications?: { spec: string; check: () => Promise<void> }[];
 }
 
@@ -50,17 +49,13 @@ export class TestStepHelper {
   /**
    * Performs a test step, waits for stabilization, takes a screenshot, and logs it for the README.
    */
-  async step(options: StepOptions) {
-    const { description, action, verifications = [] } = options;
+  async step(id: string, options: StepOptions) {
+    const { description, verifications = [] } = options;
     const stepNumber = this.stepCount.toString().padStart(3, '0');
-    // Sanitize description for filename
-    const sanitizedDescription = description.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    const screenshotName = `${stepNumber}-${sanitizedDescription}.png`;
+    const screenshotName = `${stepNumber}-${id}.png`;
     const screenshotPath = path.join(this.scenarioDir, 'screenshots', screenshotName);
 
     await test.step(description, async () => {
-      await action();
-      
       // Stabilization: Wait for network, images, and animations with a strict 2000ms timeout
       await Promise.race([
         Promise.all([
@@ -82,7 +77,9 @@ export class TestStepHelper {
 
       // Execute verifications
       for (const verification of verifications) {
-        await verification.check();
+        await test.step(verification.spec, async () => {
+          await verification.check();
+        });
       }
 
       // Ensure screenshots directory exists

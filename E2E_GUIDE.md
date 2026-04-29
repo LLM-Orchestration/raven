@@ -38,11 +38,9 @@ test('scenario title', async ({ page }, testInfo) => {
   const helper = new TestStepHelper(page, testInfo);
   helper.setMetadata('Feature Name', 'User Story Description');
 
-  await helper.step({
+  await page.goto('/');
+  await helper.step('navigate-to-page', {
     description: 'Navigate to page',
-    action: async () => {
-      await page.goto('/');
-    },
     verifications: [
       {
         spec: 'The page title should contain "Expected Title"',
@@ -53,11 +51,9 @@ test('scenario title', async ({ page }, testInfo) => {
     ]
   });
 
-  await helper.step({
+  await page.getByRole('button', { name: 'Click Me' }).click();
+  await helper.step('click-button', {
     description: 'Click a button',
-    action: async () => {
-      await page.getByRole('button', { name: 'Click Me' }).click();
-    },
     verifications: [
       {
         spec: 'The success message should be visible',

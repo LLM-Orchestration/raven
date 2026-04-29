@@ -5,11 +5,9 @@ test('homepage loads correctly', async ({ page }, testInfo) => {
   const helper = new TestStepHelper(page, testInfo);
   helper.setMetadata('Homepage', 'As a user, I want to see the homepage to understand what Raven is.');
 
-  await helper.step({
+  await page.goto('/');
+  await helper.step('navigate-to-homepage', {
     description: 'Navigate to homepage',
-    action: async () => {
-      await page.goto('/');
-    },
     verifications: [
       {
         spec: 'The page title should contain "Raven"',
@@ -20,11 +18,8 @@ test('homepage loads correctly', async ({ page }, testInfo) => {
     ]
   });
 
-  await helper.step({
+  await helper.step('check-heading', {
     description: 'Check heading',
-    action: async () => {
-      // No specific action needed, just checking visibility
-    },
     verifications: [
       {
         spec: 'The "Raven" heading should be visible',
