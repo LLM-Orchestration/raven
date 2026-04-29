@@ -2,7 +2,6 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import yaml from 'js-yaml';
 
 export async function fashion(name: string, description: string, implementation: string) {
   const tmpDir = mkdtempSync(join(tmpdir(), `raven-tool-${name}-`));
