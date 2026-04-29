@@ -27,8 +27,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
-# IntelliJ based IDEs
-.idea
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
 
 # Finder (MacOS) folder config
 .DS_Store
