@@ -8,6 +8,14 @@ export async function fashion(name: string, description: string, implementation:
   console.log(`Scaffolding tool in: ${tmpDir}`);
 
   try {
+    // 0. Get owner login
+    const ownerResult = spawnSync('gh', ['api', 'user', '--jq', '.login'], { encoding: 'utf-8' });
+    if (ownerResult.status !== 0) {
+      throw new Error(`Failed to get GitHub user: ${ownerResult.stderr}`);
+    }
+    const owner = ownerResult.stdout.trim();
+    const toolId = `${owner}/${name}`;
+
     // 1. SKILL.md
     const skillContent = `---
 name: ${name}
@@ -17,6 +25,13 @@ description: ${description}
 # ${name}
 
 ${description}
+
+## Usage
+
+To use this tool, run:
+\`\`\`bash
+nix run github:${toolId} -- [args]
+\`\`\`
 `;
     writeFileSync(join(tmpDir, 'SKILL.md'), skillContent);
 
