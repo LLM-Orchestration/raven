@@ -7,7 +7,26 @@ on:
     branches: [main]
 
 jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: bun run test:e2e
+
   build-and-deploy:
+    needs: e2e-tests
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,11 +43,12 @@ jobs:
 
       - name: Set Base Path and Destination
         run: |
+          REPO_NAME=${{ github.event.repository.name }}
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "PUBLIC_BASE_PATH=/raven/pr${{ github.event.number }}/" >> $GITHUB_ENV
+            echo "PUBLIC_BASE_PATH=/$REPO_NAME/pr${{ github.event.number }}/" >> $GITHUB_ENV
             echo "DESTINATION_DIR=pr${{ github.event.number }}" >> $GITHUB_ENV
           else
-            echo "PUBLIC_BASE_PATH=/raven/" >> $GITHUB_ENV
+            echo "PUBLIC_BASE_PATH=/$REPO_NAME/" >> $GITHUB_ENV
             echo "DESTINATION_DIR=." >> $GITHUB_ENV
           fi
 
@@ -48,5 +68,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            PR Preview: https://LLM-Orchestration.github.io/raven/pr${{ github.event.number }}/
+            PR Preview: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr${{ github.event.number }}/
           comment_tag: preview-url
