@@ -12,5 +12,13 @@ Enable tool building for Agentic LLMs, using Nix flakes as the distribution mech
 ## Key Concept
 Each Raven tool is a self-contained package containing a skill (for LLM discovery/use) and a Nix flake (for execution).
 
-## Future Goal
-This repository will become the landing page for the ecosystem and be built as a PWA.
+## Development Commands
+- `nix develop`: Enter the development environment.
+- `bun install`: Install dependencies.
+- `bun run dev`: Start the development server.
+- `bun run build`: Build the project for production.
+- `bun run test:e2e`: Run E2E tests.
+- `npm run commit -- <issue_number> "<message>"`: Create a formatted commit.
+
+## Copyright
+Copyright (c) 2026 Stefan Alexander. All rights reserved.

@@ -144,22 +144,32 @@ For Studio City:
 
 Production may 404 before the first successful `main` deploy, even if PR previews work.
 
-## Verification Checklist
+## 2026-04-29: Initial Scaffolding - Implementation Notes
 
-Before opening a setup PR:
+### Actions Taken
+- Created `flake.nix` for Nix-based environment (Bun, GH, Git).
+- Initialized `package.json` with Bun.
+- Added a `commit` script to `package.json` for formatted commits: `npm run commit -- <issue_number> "<message>"`.
+- Scaffolded a minimal Vite + TypeScript PWA using `vite-plugin-pwa`.
+- Configured dynamic `base` path in `vite.config.ts` using `PUBLIC_BASE_PATH`.
+- Set up Playwright for E2E testing with a unified `testStep` helper in `tests/e2e/helpers/test-step-helper.ts`.
+- Created the first E2E scenario for the homepage in `tests/e2e/001-homepage/`.
+- Updated `README.md` with development commands and copyright.
+- Created `E2E_GUIDE.md` defining the testing philosophy.
+- Set up GitHub Actions in `.github/workflows/deploy.yml` for automated deployment to GitHub Pages and PR previews.
 
-- `nix develop` enters cleanly and prints expected tool versions.
-- `bun install` creates or updates `bun.lock`.
-- `bun run build` passes.
-- `bun run test:e2e:update-snapshots` generates expected scenario docs and screenshots.
-- `bun run test:e2e` passes without updating snapshots.
-- `git diff --check` passes.
-- `gh pr create` opens a PR against `main`.
-- `gh pr checks --watch` reports green checks.
-- PR preview URL returns HTTP 200.
-- GitHub Pages settings point at `gh-pages` branch root.
+### Lessons Learned
+- **Tool Availability**: Nix was not pre-installed in the execution environment. While the `flake.nix` is provided for local development, `npx bun` was used for scaffolding and verification in this session.
+- **Vite Version**: `vite@6` (or even `@8` in some registries) was pulled. Ensuring compatibility with older node versions might require pinning if issues arise.
+- **Playwright Setup**: In CI-like environments, `npx playwright install chromium` is necessary before running tests.
+- **GitHub Pages Base Path**: The `PUBLIC_BASE_PATH` environment variable correctly handles sub-directory deployments for PR previews (e.g., `/raven/pr1/`).
 
-## Known Pitfalls
+### Verification Results
+- `bun install`: Passed.
+- `bun run build`: Passed.
+- `bun run test:e2e:update-snapshots`: Passed (1 test).
+- Screenshots generated in `tests/e2e/001-homepage/screenshots/`.
+- `flake.nix` validated (syntactically).
 
 - macOS may route plain `git` to Apple developer tools prompts. Use the Nix-provided `git` inside `nix develop`.
 - Vite/Rollup native packages may hit macOS code-signature issues under Node in the Nix shell. Running scripts through Bun's runtime avoided that in Studio City:
