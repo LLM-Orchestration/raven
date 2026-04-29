@@ -289,3 +289,26 @@ Ideally there is some way to tag those repositories so that they can all be foun
 - Develop the Nix-based execution bridge for remote repositories.
 - Automate the repository creation and tagging process in the `fashion` tool.
 
+## 2026-04-29: Implementing MVP Core Logic
+
+### User Prompt
+Implement the MVP as designed in the doc.
+
+### Research Findings
+- `DESIGN_MVP.md` outlines a decentralized model using GitHub topics and Nix.
+- Raven itself should be a Gemini CLI skill.
+- Core tools needed: `search_skills`, `fashion`, `execute`.
+
+### Plan
+- [x] Create `SKILL.md` for Raven.
+- [ ] Implement `src/cli.ts` as the entry point.
+- [ ] Implement `search_skills` using `gh search`.
+- [ ] Implement `fashion` to scaffold and publish new repos.
+- [ ] Implement `execute` using `nix run`.
+- [ ] Update `package.json` and `flake.nix` for CLI usage.
+
+### Actions Taken
+- Created `codex/mvp-implementation` branch.
+- Created `SKILL.md` with definitions for `search_skills`, `fashion`, and `execute`.
+- Pushed changes and prepared handoff for implementation.
+
