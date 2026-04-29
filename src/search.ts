@@ -23,14 +23,21 @@ export async function search_skills(query: string = '') {
   const allRepos = [...geminiSkills, ...ravenTools];
   const uniqueRepos = Array.from(new Map(allRepos.map(repo => [repo.fullName, repo])).values());
 
-  if (uniqueRepos.length === 0) {
-    console.log('No skills found matching your query.');
-    return;
-  }
+  return uniqueRepos;
+}
 
-  console.log('Available Skills:\n');
-  uniqueRepos.forEach((repo: any) => {
-    console.log(`- ${repo.fullName}: ${repo.description || 'No description'}`);
-    console.log('');
-  });
+export async function get_skill_details(toolId: string) {
+  const args = [
+    'api',
+    `repos/${toolId}/contents/SKILL.md`,
+    '--jq', '.content',
+  ];
+  const result = spawnSync('gh', args, { encoding: 'utf-8' });
+  if (result.status !== 0) {
+    throw new Error(`Failed to fetch SKILL.md for ${toolId}: ${result.stderr}`);
+  }
+  
+  const base64Content = result.stdout.trim();
+  const content = Buffer.from(base64Content, 'base64').toString('utf-8');
+  return content;
 }
