@@ -1,13 +1,13 @@
-# Scenario 001: Homepage
+# Scenario: 001-homepage
 
-This scenario verifies that the homepage loads correctly with the expected title and heading.
+## homepage loads correctly
 
-## Steps
+This documentation is automatically generated from the E2E test.
 
-### 1. Navigate to homepage
-- **Action**: Open the root URL.
-- **Screenshot**: ![Initial Load](./screenshots/000-initial-load.png)
+### Steps
 
-### 2. Check title and heading
-- **Action**: Verify page title contains "Raven" and there is a heading "Raven".
-- **Screenshot**: ![Content Check](./screenshots/001-content-check.png)
+#### 0. Navigate to homepage
+![Navigate to homepage](screenshots/000-navigate-to-homepage.png)
+
+#### 1. Check title and heading
+![Check title and heading](screenshots/001-check-title-and-heading.png)
