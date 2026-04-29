@@ -23,13 +23,15 @@ Each Raven tool is a separate, standalone GitHub repository by default.
 ### 2.3 The Raven Skill (The Orchestrator)
 The `raven` skill itself acts as the entry point for management functions:
 - `fashion(name: string, description: string, implementation: string)`: Generates a new GitHub repository for a tool, populates it with `SKILL.md` and `flake.nix`, and applies the necessary topic tags.
-- `execute(toolId: string, args: any)`: A fallback mechanism for explicit tool execution if standard skill activation is not applicable.
+- `search_skills(query?: string)`: Searches for available skills on GitHub tagged with `gemini-skill` or `raven-tool`. Returns a list of matches with metadata.
+- `get_skill_details(toolId: string)`: Fetches the full `SKILL.md` content for a specific tool, providing the agent with execution instructions.
 
 ### 2.4 Execution Engine (Nix Flakes)
 Nix remains the foundation for reproducibility:
 - Each tool repository contains a `flake.nix`.
 - The execution environment is deterministic and isolated.
-- The `gemini` runtime handles the `nix run` invocation during skill activation or execution.
+- Agents execute tools directly using `nix run github:<owner>/<repo> -- <args>` based on the instructions found in the tool's `SKILL.md`.
+- There is no specialized execution bridge in the `raven` skill; it leverages standard system capabilities.
 
 ## 3. Data Model
 
@@ -54,14 +56,20 @@ description: Converts PDF documents to Markdown format using the 'marker' librar
 ## 4. MVP User Flow (Agent Perspective)
 
 1. **Requirement**: Agent needs to convert a PDF to Markdown.
-2. **Discovery**: The agent identifies `pdf-to-md` in its `Available Agent Skills` list (populated by the unified indexer).
-3. **Activation**: Agent calls `activate_skill(name: "pdf-to-md")`.
-4. **Execution**: The agent follows the newly loaded instructions in the `pdf-to-md` `SKILL.md` to perform the conversion.
+2. **Discovery**: 
+    - The agent identifies `raven` as an orchestrator skill.
+    - Agent calls `raven.search_skills("pdf")`.
+    - `raven` returns a list including `username/pdf-to-md`.
+3. **Activation/Instructions**:
+    - Agent calls `raven.get_skill_details("username/pdf-to-md")`.
+    - Agent receives the full `SKILL.md` content, which includes execution instructions.
+4. **Execution**:
+    - The agent follows the instructions: `nix run github:username/pdf-to-md -- input.pdf`.
 5. **Fashioning (if missing)**:
     - If no suitable skill is found, the agent calls `raven.fashion(...)`.
     - Raven creates a new repo `username/pdf-to-md` with the generated implementation.
     - Raven tags the repo with `raven-tool`.
-    - The new skill becomes discoverable for the next session (or immediately if indexed).
+    - The new skill becomes discoverable immediately via `search_skills`.
 
 ## 5. Technical Stack
 - **Runtime**: Bun (for Raven skill) and Nix (for tool execution).

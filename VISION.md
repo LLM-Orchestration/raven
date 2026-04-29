@@ -4,16 +4,16 @@
 Raven is designed to bridge the gap between LLM reasoning and concrete action by providing a robust, reproducible, and discoverable tool ecosystem. Unlike traditional toolkits, Raven empowers LLMs to expand their own capabilities autonomously through a "self-fashioning" loop.
 
 ## Unified Skill Ecosystem
-Raven is not a silo. It is built as a first-class citizen of the Gemini CLI skill ecosystem. 
-- **Discoverability**: Raven tools are skills. They are discovered using the same mechanisms as built-in or user-installed skills.
-- **Transparency**: When an LLM looks for a capability, it finds both local skills and Raven tools in a unified way, allowing it to choose the best tool for the job without needing to know its origin.
+Raven is not a silo. It is built to integrate seamlessly with the Gemini CLI skill ecosystem. 
+- **Discoverability**: Raven tools are skills. They are discovered through GitHub topic searches, allowing the ecosystem to scale infinitely without a central authority.
+- **Direct Execution**: Once a tool is discovered and its instructions (`SKILL.md`) are read, the agent executes it directly using `nix run`. This eliminates the need for complex intermediate layers and ensures maximum reliability.
 
 ## Repository-Centric "Self-Fashioning"
 The core innovation of Raven is the "self-fashioning" lifecycle. When an LLM encounters a problem that cannot be solved with existing tools, it can:
 1. **Design**: Architect a new tool to solve the problem.
 2. **Implement**: Write the code and the Nix flake configuration.
 3. **Publish**: Create a new GitHub repository for the tool.
-4. **Register**: Tag the repository with GitHub Topics (e.g., `raven-tool`), making it instantly discoverable to the global ecosystem.
+4. **Tag**: Add GitHub Topics (e.g., `gemini-skill`, `raven-tool`), making it discoverable to anyone in the ecosystem.
 
 This turns the entire GitHub network into a dynamic, evolving library of AI expertise.
 
