@@ -11,8 +11,11 @@ test('homepage loads correctly', async ({ page }, testInfo) => {
       await page.goto('/');
     },
     verifications: [
-      async () => {
-        await expect(page).toHaveTitle(/Raven/);
+      {
+        spec: 'The page title should contain "Raven"',
+        check: async () => {
+          await expect(page).toHaveTitle(/Raven/);
+        }
       }
     ]
   });
@@ -23,8 +26,11 @@ test('homepage loads correctly', async ({ page }, testInfo) => {
       // No specific action needed, just checking visibility
     },
     verifications: [
-      async () => {
-        await expect(page.getByRole('heading', { name: 'Raven' })).toBeVisible();
+      {
+        spec: 'The "Raven" heading should be visible',
+        check: async () => {
+          await expect(page.getByRole('heading', { name: 'Raven' })).toBeVisible();
+        }
       }
     ]
   });

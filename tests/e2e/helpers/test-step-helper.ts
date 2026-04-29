@@ -5,7 +5,7 @@ import * as path from 'path';
 export interface StepOptions {
   description: string;
   action: () => Promise<void>;
-  verifications?: (() => Promise<void>)[];
+  verifications?: { spec: string; check: () => Promise<void> }[];
 }
 
 export class TestStepHelper {
@@ -82,7 +82,7 @@ export class TestStepHelper {
 
       // Execute verifications
       for (const verification of verifications) {
-        await verification();
+        await verification.check();
       }
 
       // Ensure screenshots directory exists
@@ -95,6 +95,10 @@ export class TestStepHelper {
       
       this.readmeContent.push(`#### Step ${this.stepCount}: ${description}`);
       this.readmeContent.push(`![${description}](screenshots/${screenshotName})\n`);
+      for (const verification of verifications) {
+        this.readmeContent.push(`- [x] ${verification.spec}`);
+      }
+      this.readmeContent.push('');
       
       this.stepCount++;
     });

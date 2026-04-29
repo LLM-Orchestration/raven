@@ -13,5 +13,9 @@ This documentation is automatically generated from the E2E test.
 #### Step 0: Navigate to homepage
 ![Navigate to homepage](screenshots/000-navigate-to-homepage.png)
 
+- [x] The page title should contain "Raven"
+
 #### Step 1: Check heading
 ![Check heading](screenshots/001-check-heading.png)
+
+- [x] The "Raven" heading should be visible
