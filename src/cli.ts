@@ -15,7 +15,7 @@ program
   .command('search')
   .description('Search for available skills on GitHub')
   .argument('[query]', 'Search term to filter results')
-  .action(async (query) => {
+  .action(async (query: string) => {
     try {
       await search_skills(query);
     } catch (error: any) {
@@ -30,7 +30,7 @@ program
   .argument('<name>', 'The name of the tool')
   .argument('<description>', 'A clear description for the SKILL.md')
   .argument('<implementation>', 'The code or logic for the tool')
-  .action(async (name, description, implementation) => {
+  .action(async (name: string, description: string, implementation: string) => {
     try {
       await fashion(name, description, implementation);
     } catch (error: any) {
@@ -44,7 +44,7 @@ program
   .description('Execute a Raven tool directly from GitHub using Nix')
   .argument('<toolId>', 'The GitHub repository identifier (e.g., owner/repo)')
   .argument('[args...]', 'Optional arguments to pass to the tool')
-  .action(async (toolId, args) => {
+  .action(async (toolId: string, args: string[]) => {
     try {
       await execute(toolId, args);
     } catch (error: any) {
