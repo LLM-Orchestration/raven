@@ -1,52 +1,75 @@
 # E2E Testing Guide
 
-## Philosophy
-E2E tests are the primary correctness signal for visible UI behavior. We prioritize reliability, documentability, and visual consistency.
+This project follows a strict E2E testing standard to ensure visual consistency, determinism, and high-quality documentation.
 
-### Zero-Pixel Tolerance
-We use a zero-pixel tolerance for visual snapshots. Any deviation in the rendered UI, no matter how small, is considered a failure unless it is explicitly accepted by updating the baseline snapshots. This ensures that UI regressions are caught immediately.
+## Core Principles
 
-## Conventions
-- **Playwright**: We use Playwright for all E2E tests.
-- **Numbered Scenarios**: Tests are organized into numbered folders in `tests/e2e/`.
-- **Unified Step Pattern**: Use the `TestStepHelper` class to ensure every step is documented with a screenshot and the UI is stabilized before snapshots are taken.
+### 1. Zero-Pixel Tolerance
+We use software rendering to ensure that screenshots are identical across all environments (local, CI, etc.). Any pixel difference is considered a failure.
 
-## TestStepHelper
-The `TestStepHelper` class provides a structured way to write tests:
-- **Automatic Numbering**: Steps are numbered sequentially.
-- **Stabilization**: Each step automatically waits for network idleness and image loading before taking a screenshot.
-- **Automated Documentation**: A `README.md` is generated for each scenario, showing the steps and corresponding screenshots.
+### 2. Determinism
+Tests must be deterministic. We use fixed-size viewports, disable animations where possible, and wait for UI stabilization before taking screenshots.
 
-### Usage Example
+### 3. Unified Step Pattern
+All test steps must follow a unified pattern:
+- **Action**: Perform the UI action.
+- **Stabilization**: Wait for network idle, images to load, and animations to finish (max 2000ms).
+- **Verification**: Execute assertions to verify the state.
+- **Documentation**: A numbered screenshot is automatically taken and added to the scenario's README.md.
+
+### 4. 2000ms Timeout Rule
+All stabilization waits (network, images, animations) must have a maximum timeout of 2000ms. This prevents tests from hanging and ensures fast feedback.
+
+## Usage
+
+### Test Structure
+
+Each E2E test should be located in its own directory under `tests/e2e/`, named with a three-digit prefix (e.g., `tests/e2e/001-homepage/`).
+
+### Writing a Test
+
+Use the `TestStepHelper` to manage steps and documentation.
+
 ```typescript
-test('example scenario', async ({ page }, testInfo) => {
+import { test, expect } from '@playwright/test';
+import { TestStepHelper } from '../helpers/test-step-helper';
+
+test('scenario title', async ({ page }, testInfo) => {
   const helper = new TestStepHelper(page, testInfo);
-  
-  await helper.step('Navigate to page', async () => {
-    await page.goto('/target');
+  helper.setMetadata('Feature Name', 'User Story Description');
+
+  await helper.step({
+    description: 'Navigate to page',
+    action: async () => {
+      await page.goto('/');
+    },
+    verifications: [
+      async () => {
+        await expect(page).toHaveTitle(/Expected Title/);
+      }
+    ]
   });
 
-  await helper.step('Perform action', async () => {
-    await page.click('button#action');
+  await helper.step({
+    description: 'Click a button',
+    action: async () => {
+      await page.getByRole('button', { name: 'Click Me' }).click();
+    },
+    verifications: [
+      async () => {
+        await expect(page.getByText('Success')).toBeVisible();
+      }
+    ]
   });
 
-  await helper.finish();
+  await helper.generateDocs();
 });
 ```
 
-## Folder Structure
-```text
-tests/e2e/
-├── helpers/
-│   └── test-step-helper.ts
-└── 001-homepage/
-    ├── 001-homepage.spec.ts
-    ├── README.md
-    └── screenshots/
-        └── 000-navigate-to-homepage.png
-        └── 001-perform-action.png
+### Running Tests
+
+```bash
+npm run test:e2e
 ```
 
-## Running Tests
-- `bun run test:e2e`: Run all tests.
-- `bun run test:e2e:update-snapshots`: Run tests and update visual baselines and scenario READMEs.
+This will run the tests and update the `README.md` and screenshots in each scenario directory.

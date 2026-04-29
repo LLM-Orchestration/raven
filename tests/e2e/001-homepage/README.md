@@ -2,12 +2,16 @@
 
 ## homepage loads correctly
 
+**Feature:** Homepage
+
+**User Story:** As a user, I want to see the homepage to understand what Raven is.
+
 This documentation is automatically generated from the E2E test.
 
 ### Steps
 
-#### 0. Navigate to homepage
+#### Step 0: Navigate to homepage
 ![Navigate to homepage](screenshots/000-navigate-to-homepage.png)
 
-#### 1. Check title and heading
-![Check title and heading](screenshots/001-check-title-and-heading.png)
+#### Step 1: Check heading
+![Check heading](screenshots/001-check-heading.png)

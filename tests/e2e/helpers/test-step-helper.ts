@@ -2,26 +2,56 @@ import { Page, test, TestInfo } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 
+export interface StepOptions {
+  description: string;
+  action: () => Promise<void>;
+  verifications?: (() => Promise<void>)[];
+}
+
 export class TestStepHelper {
   private stepCount = 0;
   private scenarioDir: string;
   private readmeContent: string[] = [];
+  private feature: string = '';
+  private userStory: string = '';
 
   constructor(private page: Page, private testInfo: TestInfo) {
-    // testInfo.file is the absolute path to the test file
     this.scenarioDir = path.dirname(testInfo.file);
-    const scenarioName = path.basename(this.scenarioDir);
-    
-    this.readmeContent.push(`# Scenario: ${scenarioName}\n`);
-    this.readmeContent.push(`## ${testInfo.title}\n`);
-    this.readmeContent.push(`This documentation is automatically generated from the E2E test.\n`);
-    this.readmeContent.push(`### Steps\n`);
+  }
+
+  setMetadata(feature: string, userStory: string) {
+    this.feature = feature;
+    this.userStory = userStory;
+  }
+
+  private async waitForAnimations() {
+    await this.page.evaluate(async () => {
+      const isAnimationActive = () => {
+        return Array.from(document.getAnimations()).some(
+          (animation) => animation.playState === 'running'
+        );
+      };
+
+      if (isAnimationActive()) {
+        await new Promise((resolve) => {
+          const check = () => {
+            if (!isAnimationActive()) {
+              resolve(null);
+            } else {
+              requestAnimationFrame(check);
+            }
+          };
+          requestAnimationFrame(check);
+        });
+      }
+    });
   }
 
   /**
    * Performs a test step, waits for stabilization, takes a screenshot, and logs it for the README.
    */
-  async step(description: string, action: () => Promise<void>) {
+  async step(options: StepOptions) {
+    const { description, action, verifications = [] } = options;
     const stepNumber = this.stepCount.toString().padStart(3, '0');
     // Sanitize description for filename
     const sanitizedDescription = description.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -31,23 +61,30 @@ export class TestStepHelper {
     await test.step(description, async () => {
       await action();
       
-      // Stabilization: Wait for network to be idle and images to load
+      // Stabilization: Wait for network, images, and animations
       try {
-        await this.page.waitForLoadState('networkidle', { timeout: 5000 });
+        await Promise.all([
+          this.page.waitForLoadState('networkidle', { timeout: 2000 }).catch(() => {}),
+          this.page.evaluate(async () => {
+            const images = Array.from(document.querySelectorAll('img'));
+            await Promise.all(images.map(img => {
+              if (img.complete) return Promise.resolve();
+              return new Promise(resolve => {
+                img.addEventListener('load', resolve);
+                img.addEventListener('error', resolve);
+              });
+            }));
+          }).catch(() => {}),
+          this.waitForAnimations().catch(() => {})
+        ]);
       } catch (e) {
-        // Continue if networkidle times out, it's just a best effort
+        // Continue if stabilization times out
       }
-      
-      await this.page.evaluate(async () => {
-        const images = Array.from(document.querySelectorAll('img'));
-        await Promise.all(images.map(img => {
-          if (img.complete) return Promise.resolve();
-          return new Promise(resolve => {
-            img.addEventListener('load', resolve);
-            img.addEventListener('error', resolve);
-          });
-        }));
-      });
+
+      // Execute verifications
+      for (const verification of verifications) {
+        await verification();
+      }
 
       // Ensure screenshots directory exists
       const screenshotsDir = path.dirname(screenshotPath);
@@ -57,7 +94,7 @@ export class TestStepHelper {
 
       await this.page.screenshot({ path: screenshotPath });
       
-      this.readmeContent.push(`#### ${this.stepCount}. ${description}`);
+      this.readmeContent.push(`#### Step ${this.stepCount}: ${description}`);
       this.readmeContent.push(`![${description}](screenshots/${screenshotName})\n`);
       
       this.stepCount++;
@@ -65,10 +102,20 @@ export class TestStepHelper {
   }
 
   /**
-   * Finalizes the README.md for the scenario.
+   * Generates the README.md for the scenario.
    */
-  async finish() {
+  async generateDocs() {
+    const scenarioName = path.basename(this.scenarioDir);
+    const content: string[] = [];
+    content.push(`# Scenario: ${scenarioName}\n`);
+    content.push(`## ${this.testInfo.title}\n`);
+    if (this.feature) content.push(`**Feature:** ${this.feature}\n`);
+    if (this.userStory) content.push(`**User Story:** ${this.userStory}\n`);
+    content.push(`This documentation is automatically generated from the E2E test.\n`);
+    content.push(`### Steps\n`);
+    content.push(...this.readmeContent);
+
     const readmePath = path.join(this.scenarioDir, 'README.md');
-    fs.writeFileSync(readmePath, this.readmeContent.join('\n'));
+    fs.writeFileSync(readmePath, content.join('\n'));
   }
 }
