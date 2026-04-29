@@ -253,3 +253,22 @@ This is still not right. Each verification line is supposed to have a descriptio
   - `- [x] The page title should contain "Raven"`
   - `- [x] The "Raven" heading should be visible`
 - Screenshots are correctly generated and linked in the `README.md`.
+
+## 2026-04-29: MVP Design Documentation
+
+### User Prompt
+Write a design doc for the MVP for the Raven project.
+
+### Actions Taken
+- Researched Raven's vision and core concepts.
+- Defined the "Raven Skill", "Raven Registry", and "Execution Engine" components.
+- Outlined the "Self-Fashioning" workflow for LLMs.
+- Created `DESIGN_MVP.md` with the detailed architecture and implementation milestones.
+- Updated `VISION.md` to reference the new design document.
+
+### MVP Scope Defined
+- **Raven Skill**: LLM-facing functions (`search`, `execute`, `fashion`).
+- **Raven Registry**: GitHub-backed tool repository with `tools.json` index.
+- **Execution Engine**: Nix-based isolated environment.
+- **Self-Fashioning**: Template-based generation and publication of tools.
+

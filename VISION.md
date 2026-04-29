@@ -25,3 +25,12 @@ Reproducibility is the cornerstone of reliable agentic behavior. By using Nix fl
 - **Portability**: Tools can be easily shared and executed across different operating systems and architectures.
 
 Raven is not just a tool library; it's an evolutionary platform for AI agency.
+
+## Near-term Milestones
+The immediate focus is on building the MVP to demonstrate the core "self-fashioning" loop. See [DESIGN_MVP.md](./DESIGN_MVP.md) for the detailed technical plan.
+
+Key milestones:
+- **Registry Foundation**: Establishing the GitHub-backed tool registry.
+- **Execution Engine**: Reliable Nix-based tool invocation.
+- **Self-Fashioning**: Enabling LLMs to generate and publish new tools.
+
