@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "raven": "./src/cli.ts"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -16,5 +19,9 @@
     "typescript": "^6.0.3",
     "vite": "^7.0.0",
     "vite-plugin-pwa": "^1.2.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "js-yaml": "^4.1.1"
   }
 }
