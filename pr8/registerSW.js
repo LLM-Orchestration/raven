@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/raven/pr8/sw.js', { scope: '/raven/pr8/' })})}
