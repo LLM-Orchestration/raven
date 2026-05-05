@@ -10,28 +10,34 @@ Crucially, Raven is designed to integrate seamlessly with the existing Gemini CL
 ### 2.1 Unified Skill Discovery
 Raven tools do not use a proprietary search mechanism. Instead, they leverage the Gemini CLI's standard skill discovery process:
 - **`SKILL.md`**: Every Raven tool is a repository containing a `SKILL.md` file at its root, with YAML frontmatter defining its `name` and `description`.
-- **Unified Indexing**: The Gemini CLI (or a Raven-specific extension) discovers these tools by searching GitHub for repositories tagged with specific topics (e.g., `gemini-skill`, `raven-tool`).
-- **Prompt Injection**: Discovered tools are injected into the LLM's system prompt as available skills, alongside built-in and locally installed skills.
-- **On-Demand Activation**: When the LLM calls `activate_skill(name: "tool-name")`, the environment resolves the GitHub repository, prepares the environment via Nix, and activates the skill's instructions.
+- **Unified Indexing**: Raven provides discovery and maintenance tools that bridge GitHub-based tools with the local Gemini CLI skill system.
+- **`skills-cli` Integration**: Raven uses `skills-cli` under the hood to install and manage skills.
+- **Discovery Mechanism**:
+    - `raven sync`: Searches GitHub for repositories tagged with `gemini-skill` or `raven-tool` and installs them using `skills-cli add`.
+    - `raven freshen`: A maintenance step that runs `skills-cli update` to ensure all installed skills are up-to-date.
+- **Prompt Injection**: Discovered tools are injected into the LLM's system prompt as available skills by the Gemini CLI.
 
 ### 2.2 Repository-Centric Tooling
 Each Raven tool is a separate, standalone GitHub repository by default.
 - **Isolation**: Each tool has its own dependencies, versioning, and lifecycle.
 - **Distribution**: Tools are shared and discovered via GitHub.
-- **Metadata**: GitHub Topics are used for indexing and categorization.
+- **Metadata**: GitHub Topics (`gemini-skill`, `raven-tool`) are used for indexing.
 
 ### 2.3 The Raven Skill (The Orchestrator)
-The `raven` skill itself acts as the entry point for management functions:
+The `raven` skill itself acts as the entry point for management and learning:
 - `fashion(name: string, description: string, implementation: string)`: Generates a new GitHub repository for a tool, populates it with `SKILL.md` and `flake.nix`, and applies the necessary topic tags.
-- `search_skills(query?: string)`: Searches for available skills on GitHub tagged with `gemini-skill` or `raven-tool`. Returns a list of matches with metadata.
-- `get_skill_details(toolId: string)`: Fetches the full `SKILL.md` content for a specific tool, providing the agent with execution instructions.
+- `search_skills(query?: string)`: Searches for available skills on GitHub.
+- `sync()`: Discovers and installs all available Raven skills.
+- `freshen()`: Updates all installed Raven skills.
+- **Conforming Skill Guide**: Detailed instructions within the Raven skill on how to build new skills that the ecosystem can discover.
+- **Learning Skill**: A trigger for the agent to review its performance after complex tasks and consider fashioning new tools to optimize future workflows.
 
 ### 2.4 Execution Engine (Nix Flakes)
 Nix remains the foundation for reproducibility:
 - Each tool repository contains a `flake.nix`.
 - The execution environment is deterministic and isolated.
 - Agents execute tools directly using `nix run github:<owner>/<repo> -- <args>` based on the instructions found in the tool's `SKILL.md`.
-- There is no specialized execution bridge in the `raven` skill; it leverages standard system capabilities.
+- Raven facilitates discovery and installation, but execution is handled by the standard system runtime.
 
 ## 3. Data Model
 

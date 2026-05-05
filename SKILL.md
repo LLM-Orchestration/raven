@@ -25,3 +25,39 @@ Creates a new standalone Raven tool as a GitHub repository.
 - `description`: A clear description for the `SKILL.md`.
 - `implementation`: The code or logic for the tool (e.g., a Bun script or Python script).
 - Raven will automatically generate the `SKILL.md` with execution instructions, a `flake.nix`, and tag the repository correctly.
+
+### sync()
+Discovers and installs all available Raven skills from GitHub.
+- Raven will search for repositories tagged with `gemini-skill` or `raven-tool` and install them locally using `skills-cli`.
+
+### freshen()
+Updates all installed Raven skills to their latest versions.
+- This should be run as a pre-step before using other CLIs to ensure your skill definitions are current.
+
+### raven_learning()
+Trigger this skill after completing any complex task to review what you learned and consider fashioning new tools.
+- Reflect on the steps taken and identify repetitive or complex actions that could be automated by a new Raven tool.
+- Propose a name, description, and implementation for a new tool if appropriate.
+
+## How to Build a Conforming Skill
+
+To create a skill that Raven can discover and use, follow these requirements:
+
+1.  **Repository Structure**:
+    - `SKILL.md`: (Required) Contains the agent instructions and metadata.
+    - `flake.nix`: (Required) Defines the reproducible execution environment using Nix.
+    - `tool.ts` (or other): The implementation of the tool's logic.
+2.  **SKILL.md Format**:
+    - Must start with YAML frontmatter:
+      ```yaml
+      ---
+      name: your-skill-name
+      description: A clear description of what the skill does.
+      ---
+      ```
+    - Should include a "Usage" section with the `nix run` command.
+3.  **flake.nix Format**:
+    - Use `pkgs.writeShellApplication` to create an executable.
+    - Ensure it can run via `nix run github:owner/repo`.
+4.  **GitHub Topics**:
+    - Tag the repository with `gemini-skill` and `raven-tool` to make it discoverable.
