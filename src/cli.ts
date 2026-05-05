@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import { search_skills, get_skill_details } from './search.js';
 import { fashion } from './fashion.js';
+import { sync, freshen } from './sync.js';
 
 const program = new Command();
 
@@ -49,6 +50,30 @@ program
       await fashion(name, description, implementation);
     } catch (error: any) {
       console.error('Error fashioning tool:', error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('sync')
+  .description('Discover and install all available Raven skills from GitHub')
+  .action(async () => {
+    try {
+      await sync();
+    } catch (error: any) {
+      console.error('Error syncing skills:', error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('freshen')
+  .description('Update all installed Raven skills to their latest versions')
+  .action(async () => {
+    try {
+      await freshen();
+    } catch (error: any) {
+      console.error('Error freshening skills:', error.message);
       process.exit(1);
     }
   });
