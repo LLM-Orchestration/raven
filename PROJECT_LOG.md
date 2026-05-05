@@ -349,9 +349,29 @@ The search functionality is also not hooked up at all. the idea was that if the 
   - Revised `DESIGN_MVP.md` to reflect the removal of the execution bridge and focus on direct Nix execution and unified discovery.
   - Updated `SKILL.md` to include `get_skill_details`.
 
-### Verification Results
-- `npm run build`: Passed.
-- `raven search "raven"`: Verified it returns JSON list of repos.
-- `raven get-details <toolId>`: Verified it fetches and displays `SKILL.md`.
-- `fashion` logic: Verified it generates correct "Usage" section in `SKILL.md`.
+## 2026-05-05: Implementing Phase 2 Discovery and Maintenance
+
+### User Prompt
+The design doesn't seem to really take into account how skill discovery works... Raven should probably use skills-cli under the hood to install the skills themselves, and what raven provides should be three small pieces of functionality:
+(1) a pre-step to running the user's CLI of choice that freshens all installed SKILL.md files; and
+(2) a discovery mechanism that syncs all new raven skills when they are found for the first time; and
+(3) a raven skill which describes in detail how to build a conforming skill...
+(4) a raven learning skill which asks the agent to review what it learned...
+
+### Actions Taken
+- **Researched `skills-cli`**: Confirmed it exists on NPM and provides `add` and `update` commands.
+- **Updated `DESIGN_MVP.md`**: Integrated `skills-cli`, `sync`, `freshen`, and the learning skill into the core architecture.
+- **Updated root `SKILL.md`**:
+    - Added `sync` and `freshen` tool definitions.
+    - Added `raven_learning` tool definition.
+    - Added "How to Build a Conforming Skill" guide.
+- **Set Plan for Implementation**:
+    - Add `skills-cli` as a dependency.
+    - Implement `sync` and `freshen` in `src/sync.ts` using `skills-cli`.
+    - Hook new commands into `src/cli.ts`.
+
+### Plan
+1.  Hand off to `@coder` to implement the `sync` and `freshen` commands.
+2.  Verify the implementation by running the commands.
+3.  Ensure `SKILL.md` instructions are clear for the LLM.
 
