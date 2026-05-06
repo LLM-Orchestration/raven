@@ -32,7 +32,12 @@ Discovers and installs all available Raven skills from GitHub.
 
 ### freshen()
 Updates all installed Raven skills to their latest versions.
-- This should be run as a pre-step before using other CLIs to ensure your skill definitions are current.
+- This should be run periodically to ensure your skill definitions are current.
+
+### run(command: string)
+Runs the specified command after first freshening all installed skills.
+- `command`: The full command string to execute (e.g., "npm start" or "python script.py").
+- Use this as a wrapper for running other tools to ensure they always use the latest skill definitions.
 
 ### raven_learning()
 Trigger this skill after completing any complex task to review what you learned and consider fashioning new tools.

@@ -396,3 +396,19 @@ The design doesn't seem to really take into account how skill discovery works...
 - Manual tests of `sync` and `freshen` commands were successful.
 - Discovered skills were correctly installed in the local `.claude/skills` directory.
 
+## 2026-05-06: Conductor Verification and Refinement
+
+### Research Findings
+- `sync` and `freshen` are implemented and working.
+- `raven_learning` is defined in `SKILL.md` but not implemented in `src/cli.ts`.
+- The "pre-step" requirement for freshening skills can be better served by a `run` command wrapper.
+
+### Plan
+- [x] Update `SKILL.md` to include the `run` command.
+- [ ] Implement `raven learning` in `src/cli.ts`.
+- [ ] Implement `raven run <command>` in `src/cli.ts`.
+
+### Actions Taken
+- Updated `SKILL.md` with `run()` tool definition.
+- Handed off to `@coder` to implement the `learning` and `run` commands.
+
