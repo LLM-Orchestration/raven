@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { Command } from 'commander';
+import { spawnSync } from 'node:child_process';
 import { search_skills, get_skill_details } from './search.js';
 import { fashion } from './fashion.js';
 import { sync, freshen } from './sync.js';
@@ -9,7 +10,8 @@ const program = new Command();
 program
   .name('raven')
   .description('Raven - Tool building for Agentic LLMs')
-  .version('0.1.0');
+  .version('0.1.0')
+  .enablePositionalOptions();
 
 program
   .command('search')
@@ -76,6 +78,40 @@ program
       console.error('Error freshening skills:', error.message);
       process.exit(1);
     }
+  });
+
+program
+  .command('run')
+  .description('Run a command after freshening skills')
+  .argument('<command...>', 'The command and arguments to run')
+  .passThroughOptions()
+  .action(async (args: string[]) => {
+    try {
+      await freshen();
+      const [cmd, ...cmdArgs] = args;
+      const result = spawnSync(cmd, cmdArgs, { stdio: 'inherit' });
+      process.exit(result.status ?? 0);
+    } catch (error: any) {
+      console.error('Error running command:', error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('learning')
+  .description('Review what you learned and consider fashioning new tools')
+  .action(() => {
+    console.log(`
+Reflect on the task you just completed.
+1. What were the most complex or repetitive steps?
+2. Could any of these steps be automated by a new Raven tool?
+3. If yes, consider using 'raven fashion' to create a new tool.
+
+A conforming Raven tool needs:
+- A SKILL.md with frontmatter (name, description).
+- A flake.nix for reproducible execution via Nix.
+- GitHub topics: gemini-skill, raven-tool.
+    `);
   });
 
 program.parse();

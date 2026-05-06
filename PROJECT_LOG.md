@@ -405,10 +405,17 @@ The design doesn't seem to really take into account how skill discovery works...
 
 ### Plan
 - [x] Update `SKILL.md` to include the `run` command.
-- [ ] Implement `raven learning` in `src/cli.ts`.
-- [ ] Implement `raven run <command>` in `src/cli.ts`.
+- [x] Implement `raven learning` in `src/cli.ts`.
+- [x] Implement `raven run <command>` in `src/cli.ts`.
 
 ### Actions Taken
 - Updated `SKILL.md` with `run()` tool definition.
-- Handed off to `@coder` to implement the `learning` and `run` commands.
+- Implemented `learning` command in `src/cli.ts` to provide guidance for LLM reflection and tool fashioning.
+- Implemented `run` command in `src/cli.ts` as a wrapper that calls `freshen()` before executing the target command.
+- Updated `src/cli.ts` to use `.enablePositionalOptions()` and `.passThroughOptions()` for the `run` command, allowing flags to be passed to the wrapped command.
+
+### Verification Results
+- `npm run build`: Passed.
+- `npx tsx src/cli.ts learning`: Passed (verified output message).
+- `npx tsx src/cli.ts run ls -l src`: Passed (verified it calls `freshen()` and handles flags).
 
