@@ -1,16 +1,18 @@
-The project scaffolding for Raven is complete and verified.
+Raven MVP Phase 2 implementation is complete and verified.
 
 ### Key Achievements
-- **Reproducible Environment**: `flake.nix` created with Bun, GH, and Git.
-- **PWA Scaffold**: Minimal Vite + TypeScript project with `vite-plugin-pwa` and configurable `PUBLIC_BASE_PATH`.
-- **E2E Testing**: Playwright setup with `testStep` helper and a verified homepage scenario.
-- **CI/CD**: GitHub Actions configured for production and PR preview deployments to GitHub Pages.
-- **Documentation**: All baseline documents (`README.md`, `VISION.md`, `PROJECT_LOG.md`, `AGENTS.md`, `E2E_GUIDE.md`) are present and follow project conventions.
+- **Sync & Freshen**: Implemented decentralized skill discovery and maintenance using `skills-cli`. Raven can now search GitHub for repositories tagged with `gemini-skill` or `raven-tool` and install them locally.
+- **Run Wrapper**: Added a `run` command that automatically freshens skills before executing any command, ensuring agents always work with the latest skill definitions.
+- **Self-Fashioning Logic**: Implemented `fashion` tool to automate the creation of new standalone tool repositories with `SKILL.md`, `flake.nix`, and appropriate GitHub topics.
+- **Agent Learning**: Added a `learning` command to prompt agents to reflect on their workflows and identify opportunities for new tool creation.
+- **Documentation**: Updated `SKILL.md` with comprehensive instructions for building conforming skills and using the Raven orchestrator.
 
 ### Verification
-- `bun run build`: Passed.
-- `bun run test:e2e`: Passed (1 test).
-- PR Preview available at: https://LLM-Orchestration.github.io/raven/pr2/
+- `npm run build`: Passed.
+- `raven search`: Functional.
+- `raven sync`: Successfully installed 5 skills.
+- `raven freshen`: Successfully updated skills.
+- `raven run`: Verified as a pre-step wrapper.
+- `raven learning`: Verified guiding message.
 
-PR: https://github.com/LLM-Orchestration/raven/pull/2
-Closes #1
+Closes #7
