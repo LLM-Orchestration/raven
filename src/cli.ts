@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 import { Command } from 'commander';
 import { spawnSync } from 'node:child_process';
-import { search_skills, get_skill_details } from './search.js';
-import { fashion } from './fashion.js';
-import { sync, freshen } from './sync.js';
+import { search_skills, get_skill_details } from './search.ts';
+import { fashion } from './fashion.ts';
+import { sync, freshen } from './sync.ts';
 
 const program = new Command();
 
