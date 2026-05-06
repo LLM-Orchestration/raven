@@ -8,7 +8,7 @@ export async function sync() {
 
   for (const repo of repos) {
     console.log(`Adding skill: ${repo.fullName}`);
-    const result = spawnSync('npx', ['skills-cli', 'add', `https://github.com/${repo.fullName}.git`], {
+    const result = spawnSync('bun', ['x', 'skills-cli', 'add', `https://github.com/${repo.fullName}.git`], {
       stdio: 'inherit',
     });
 
@@ -20,7 +20,7 @@ export async function sync() {
 
 export async function freshen() {
   console.log('Freshening installed skills...');
-  const result = spawnSync('npx', ['skills-cli', 'update'], {
+  const result = spawnSync('bun', ['x', 'skills-cli', 'update'], {
     stdio: 'inherit',
   });
 
