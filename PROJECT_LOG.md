@@ -457,12 +457,24 @@ While you are there, the licence is supposed to be GPLv3, not the erroneous stef
 - `package.json` metadata: Verified.
 - `LICENSE` content: Verified as GPLv3.
 
-### 2026-05-06: Conductor Final Verification
+### 2026-05-06: Conductor Orchestration - Landing Page and License Fix
 
-- **Documentation**: `README.md` is now a high-quality landing page. License is correctly set to GPLv3 everywhere.
-- **Code**: CLI is fixed and runs without errors in a shell environment.
-- **Perms**: `src/cli.ts` is executable.
+#### Research Findings
+- `README.md` currently lists Nix as an "alternative", which contradicts the project goal of hermetic reproducibility.
+- `flake.nix` shell hook gives advice (`bun link`) that might be seen as non-hermetic.
+- CLI implementation uses `npx skills-cli`, which should be changed to `bun x skills-cli` to use the pinned version.
+- "Stefan Alexander" copyright has been removed from most places but a final sweep is needed.
+- `src/cli.ts` appears functional but could benefit from clearer onboarding instructions in the README.
 
-**Verdict**: Landing page and license fixes complete and verified.
+#### Orchestration Plan
+1. **Delegate implementation to @coder**:
+   - Update `README.md` to be a proper landing page with Nix-first instructions.
+   - Update `flake.nix` shell hook to align with Nix-first flow.
+   - Refine CLI commands to use `bun x` for local dependencies.
+   - Final license/copyright verification.
+2. **Verify @coder's work**:
+   - Check `README.md` content and clarity.
+   - Verify `nix develop` flow works as described.
+   - Verify CLI commands run correctly.
 
 
