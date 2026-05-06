@@ -13,7 +13,7 @@ export async function sync() {
     });
 
     if (result.status !== 0) {
-      console.warn(`Failed to add skill ${repo.fullName}: ${result.stderr}`);
+      console.warn(`Failed to add skill ${repo.fullName}.`);
     }
   }
 }
@@ -25,6 +25,6 @@ export async function freshen() {
   });
 
   if (result.status !== 0) {
-    throw new Error(`Failed to freshen skills: ${result.stderr}`);
+    throw new Error('Failed to freshen skills.');
   }
 }
