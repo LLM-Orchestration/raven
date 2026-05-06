@@ -19,35 +19,29 @@ Enable autonomous tool building and discovery for Agentic LLMs, using Nix flakes
 
 ## Installation
 
-### Requirements
+Raven requires [Nix](https://nixos.org/download.html) for hermetic tool execution and a reproducible development environment.
 
-To use Raven, you must have the following tools installed on your system:
+### 1. Install Nix
+Follow the instructions at [nixos.org/download.html](https://nixos.org/download.html) to install Nix on your system.
 
-- **Nix**: Required for reproducible tool execution. [Download Nix](https://nixos.org/download.html)
-- **Bun**: The fast JavaScript runtime used by Raven. [Install Bun](https://bun.sh)
-- **GitHub CLI (gh)**: Required for discovery and publishing tools. [Install GitHub CLI](https://cli.github.com/)
-
-### Setup
-
-Clone the repository and install dependencies:
+### 2. Enter Development Environment
+Clone the repository and enter the Nix development shell:
 
 ```bash
-# Clone the repository
 git clone https://github.com/LLM-Orchestration/raven.git
 cd raven
+nix develop
+```
 
-# Install dependencies
+### 3. Setup Dependencies
+Once inside the Nix shell, install the project dependencies and link the `raven` CLI:
+
+```bash
 bun install
-
-# Link raven for global usage
 bun link
 ```
 
-Alternatively, if you have Nix installed, you can enter a pre-configured development environment:
-
-```bash
-nix develop
-```
+The `raven` command is now available for use within your shell.
 
 ## Usage
 
