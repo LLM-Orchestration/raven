@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { search_skills } from './search.js';
+import { search_skills } from './search.ts';
 
 export async function sync() {
   console.log('Searching for skills...');
